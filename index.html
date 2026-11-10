@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10s Life Support Hero - Arcade Reflex Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700;800&family=Bungee&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+  <!-- Canvas Confetti Library for juicy celebrations -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient floating game shapes -->
+  <div class="ambient-stars" aria-hidden="true">
+    <span class="shape s1">⭐</span>
+    <span class="shape s2">✚</span>
+    <span class="shape s3">⚡</span>
+    <span class="shape s4">❤️</span>
+    <span class="shape s5">🩺</span>
+    <span class="shape s6">🌟</span>
+  </div>
+
+  <div class="arcade-cabinet">
+    <!-- Marquee Banner -->
+    <header class="arcade-header">
+      <div class="marquee-title-box">
+        <span class="arcade-tag">ARCADE RAPID REFLEX</span>
+        <h1 class="game-logo">10s LIFE SAVER!</h1>
+        <p class="tagline">5 Vital Actions • Exactly 10 Seconds • Save the Patient!</p>
+      </div>
+
+      <!-- Live Dashboard / Board Game Scorecards -->
+      <div class="scoreboard-ribbon">
+        <div class="score-pill">
+          <span class="pill-label">HIGH SCORE</span>
+          <span class="pill-val" id="highScoreVal">0000</span>
+        </div>
+        <div class="score-pill score-highlight">
+          <span class="pill-label">SCORE</span>
+          <span class="pill-val" id="scoreVal">0000</span>
+        </div>
+        <div class="score-pill">
+          <span class="pill-label">STREAK</span>
+          <span class="pill-val" id="streakVal">x0 🔥</span>
+        </div>
+        <button id="soundToggleBtn" class="chunky-icon-btn" title="Toggle Sound FX">
+          <span id="soundIcon">🔊</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Game Board Container -->
+    <main class="board-tabletop">
+      
+      <!-- Top Arena Bar: Large Arcade Timer & Emergency Patient Status -->
+      <section class="arena-status-bar">
+        <!-- Giant Chunky Arcade Timer -->
+        <div class="chunky-timer-card">
+          <div class="timer-dial">
+            <svg class="timer-ring-svg" viewBox="0 0 120 120">
+              <circle class="ring-bg" cx="60" cy="60" r="50"></circle>
+              <circle id="timerProgressRing" class="ring-fg" cx="60" cy="60" r="50"></circle>
+            </svg>
+            <div class="dial-center">
+              <span id="bigTimerText" class="timer-digits">10.0</span>
+              <span class="timer-sublabel">SEC LEFT</span>
+            </div>
+          </div>
+          <div class="timer-meter-bar-wrapper">
+            <div id="timerMeterFill" class="timer-meter-fill"></div>
+          </div>
+        </div>
+
+        <!-- Animated Patient Simulation Screen -->
+        <div class="patient-monitor-card" id="patientMonitor">
+          <div class="monitor-screen-header">
+            <span class="live-dot"></span>
+            <span class="monitor-label">PATIENT VITALS SIMULATOR</span>
+            <span class="bpm-tag" id="bpmDisplay">0 BPM</span>
+          </div>
+
+          <div class="monitor-stage">
+            <div class="avatar-wrapper" id="patientAvatarWrapper">
+              <div class="patient-emoji" id="patientAvatar">😵</div>
+              <div class="status-bubble" id="statusBubble">UNRESPONSIVE!</div>
+            </div>
+            <div class="monitor-ecg-line">
+              <svg class="ecg-svg" viewBox="0 0 300 40">
+                <path id="ecgPath" d="M0,20 L60,20 L70,5 L80,35 L90,20 L180,20 L190,8 L200,32 L210,20 L300,20" />
+              </svg>
+            </div>
+          </div>
+
+          <div class="monitor-footer-cue" id="currentCueText">
+            Press <strong>"START MISSION"</strong> to begin 10-second life assessment!
+          </div>
+        </div>
+      </section>
+
+      <!-- Center Board: 5 Chunky Step Tiles -->
+      <section class="gameplay-steps-board">
+        <div class="steps-heading-bar">
+          <span class="badge-round">1</span>
+          <h2>THE 10-SECOND CHECKLIST MISSION</h2>
+          <span class="hint-pill">Click items in order (or as prompt lights up!)</span>
+        </div>
+
+        <div class="tiles-grid" id="tilesContainer">
+          <!-- Tile 1 -->
+          <button class="step-tile" id="tile-1" data-step="1">
+            <div class="tile-face">
+              <div class="tile-top-bar">
+                <span class="step-badge">STEP 01</span>
+                <span class="time-budget">&lt; 2.0s</span>
+              </div>
+              <div class="tile-icon">👀</div>
+              <h3 class="tile-title">Scene Safety</h3>
+              <p class="tile-desc">Ensure zero danger: traffic, wires, or fire.</p>
+              <div class="tile-stamp">DONE!</div>
+            </div>
+          </button>
+
+          <!-- Tile 2 -->
+          <button class="step-tile" id="tile-2" data-step="2">
+            <div class="tile-face">
+              <div class="tile-top-bar">
+                <span class="step-badge">STEP 02</span>
+                <span class="time-budget">2-4s</span>
+              </div>
+              <div class="tile-icon">🗣️</div>
+              <h3 class="tile-title">Check Response</h3>
+              <p class="tile-desc">Tap shoulders firmly & shout: "Are you OK?!"</p>
+              <div class="tile-stamp">DONE!</div>
+            </div>
+          </button>
+
+          <!-- Tile 3 -->
+          <button class="step-tile" id="tile-3" data-step="3">
+            <div class="tile-face">
+              <div class="tile-top-bar">
+                <span class="step-badge">STEP 03</span>
+                <span class="time-budget">4-6s</span>
+              </div>
+              <div class="tile-icon">💨</div>
+              <h3 class="tile-title">Open Airway</h3>
+              <p class="tile-desc">Gentle Head-Tilt & Chin-Lift to free passage.</p>
+              <div class="tile-stamp">DONE!</div>
+            </div>
+          </button>
+
+          <!-- Tile 4 -->
+          <button class="step-tile" id="tile-4" data-step="4">
+            <div class="tile-face">
+              <div class="tile-top-bar">
+                <span class="step-badge">STEP 04</span>
+                <span class="time-budget">6-8s</span>
+              </div>
+              <div class="tile-icon">🫁</div>
+              <h3 class="tile-title">Look & Listen</h3>
+              <p class="tile-desc">Watch chest rise for 5s. Agonal gasp = NO air!</p>
+              <div class="tile-stamp">DONE!</div>
+            </div>
+          </button>
+
+          <!-- Tile 5 -->
+          <button class="step-tile" id="tile-5" data-step="5">
+            <div class="tile-face">
+              <div class="tile-top-bar">
+                <span class="step-badge">STEP 05</span>
+                <span class="time-budget">Max 10s</span>
+              </div>
+              <div class="tile-icon">🩸</div>
+              <h3 class="tile-title">Carotid Pulse</h3>
+              <p class="tile-desc">Check neck pulse. If in doubt &gt; 10s: CPR!</p>
+              <div class="tile-stamp">DONE!</div>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Bottom Control Console & Big Chunky Push Buttons -->
+      <section class="bottom-arcade-console">
+        <!-- Main arcade action buttons -->
+        <div class="console-actions">
+          <button id="startPlayBtn" class="chunky-push-btn chunky-green">
+            <span class="btn-shine"></span>
+            <span class="btn-content">
+              <span class="btn-icon">🚀</span>
+              <span class="btn-text">START 10s MISSION</span>
+            </span>
+          </button>
+
+          <button id="cprModeBtn" class="chunky-push-btn chunky-orange">
+            <span class="btn-shine"></span>
+            <span class="btn-content">
+              <span class="btn-icon">❤️</span>
+              <span class="btn-text">CPR RHYTHM METRONOME</span>
+            </span>
+          </button>
+
+          <button id="resetGameBtn" class="chunky-push-btn chunky-blue">
+            <span class="btn-shine"></span>
+            <span class="btn-content">
+              <span class="btn-icon">🔄</span>
+              <span class="btn-text">RESET</span>
+            </span>
+          </button>
+        </div>
+
+        <!-- Mini Arcade Mini-Game (CPR Beat Tapper) -->
+        <div class="cpr-arcade-pad" id="cprMiniPad">
+          <div class="pad-header">
+            <div class="pad-title-wrap">
+              <span class="pulse-heart-icon" id="metronomePulse">💓</span>
+              <div>
+                <h4>CHEST COMPRESSION SLAMMER</h4>
+                <p>Tap to the 110 BPM groove (Target: 30 compressions)</p>
+              </div>
+            </div>
+            <div class="beat-accuracy-badge" id="beatRating">READY</div>
+          </div>
+
+          <div class="pad-body">
+            <button id="compressionPadBtn" class="massive-pad-btn">
+              <span class="pad-shine"></span>
+              <span class="pad-circle-indicator" id="padGlow"></span>
+              <span class="pad-main-text">PUSH CHEST HERE!</span>
+              <span class="pad-counter" id="padCounterText">0 / 30</span>
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- Educational Cheat Card Ribbons -->
+      <section class="gameplay-footer-tips">
+        <div class="tip-card card-yellow">
+          <span class="tip-badge">GOLDEN RULE</span>
+          <p><strong>Never spend &gt; 10 seconds</strong> checking for breathing and pulse. If in doubt, begin chest compressions immediately!</p>
+        </div>
+        <div class="tip-card card-purple">
+          <span class="tip-badge">PRO TIP</span>
+          <p>Breathing & Pulse checks are done <strong>simultaneously</strong> so you never waste a single precious second.</p>
+        </div>
+        <div class="tip-card card-pink">
+          <span class="tip-badge">AED READY</span>
+          <p>As soon as the Automated External Defibrillator arrives, turn it ON and stick the pads on bare chest.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Win/Lose Arcade Victory Modal Overlay -->
+  <div class="arcade-modal-backdrop" id="resultsModal">
+    <div class="arcade-modal-box">
+      <div class="modal-decor-ribbon" id="modalRibbon">MISSION COMPLETE!</div>
+      
+      <div class="modal-body">
+        <div class="modal-avatar" id="modalEmoji">🎉</div>
+        <h2 id="modalHeading">LIFESAVER REFLEX MASTER!</h2>
+        <p id="modalSubtext">You completed all 5 primary life support measures in 6.4 seconds!</p>
+
+        <!-- Stats Grid -->
+        <div class="modal-stats-grid">
+          <div class="stat-cube">
+            <span class="cube-label">REACTION TIME</span>
+            <span class="cube-val" id="modalTimeVal">6.4s</span>
+          </div>
+          <div class="stat-cube">
+            <span class="cube-label">BONUS POINTS</span>
+            <span class="cube-val" id="modalScoreVal">+850</span>
+          </div>
+          <div class="stat-cube">
+            <span class="cube-label">TRIAGE ACCURACY</span>
+            <span class="cube-val" id="modalAccVal">100%</span>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button id="modalPlayAgainBtn" class="chunky-push-btn chunky-green modal-btn">
+            <span class="btn-shine"></span>
+            <span class="btn-content">
+              <span class="btn-icon">⚡</span>
+              <span class="btn-text">PLAY AGAIN</span>
+            </span>
+          </button>
+          <button id="modalCloseBtn" class="chunky-push-btn chunky-blue modal-btn">
+            <span class="btn-shine"></span>
+            <span class="btn-content">
+              <span class="btn-icon">✖</span>
+              <span class="btn-text">VIEW BOARD</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
